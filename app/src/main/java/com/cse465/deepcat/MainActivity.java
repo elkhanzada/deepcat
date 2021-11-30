@@ -2,12 +2,15 @@ package com.cse465.deepcat;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 import org.tensorflow.lite.Interpreter;
@@ -32,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     int INPUT_SIZE = 224;
     int PIXEL_SIZE = 3;
     ImageView uploaded;
+    Button changeViewButton = null;
+
     ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
     uri -> {
         // Handle the returned Uri
@@ -51,6 +56,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        changeViewButton = (Button)findViewById(R.id.mainChangeView);
+        changeViewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, otherActivity.class));
+            }
+        });
         try {
             uploaded = findViewById(R.id.image);
             interpreter = new Interpreter(loadModelFile(getAssets()));
