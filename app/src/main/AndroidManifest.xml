@@ -18,7 +18,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".otherActivity"
+            android:name=".ImageDisplay"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,5 +26,5 @@
             </intent-filter>
         </activity>
     </application>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:required="true" />
 </manifest>

@@ -1,4 +1,8 @@
 package com.cse465.deepcat;
+/*
+* with the help of https://medium.com/codex/android-simple-image-gallery-30c0f00abe64
+* */
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    Interpreter interpreter;
+    public static Interpreter interpreter;
     List<String> labels;
     String MODEL_FILE = "my_model.tflite";
     String LABEL_FILE = "labels.txt";
@@ -36,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     int PIXEL_SIZE = 3;
     ImageView uploaded;
     Button changeViewButton = null;
+    static public ArrayList<String> category;
 
     ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
     uri -> {
@@ -60,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         changeViewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, otherActivity.class));
+                startActivity(new Intent(MainActivity.this, ImageDisplay.class));
             }
         });
         try {
