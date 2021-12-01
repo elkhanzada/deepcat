@@ -7,6 +7,7 @@ public class PictureInfo {
     private  String pictureSize;
     private  String imageUri;
     private Boolean selected = false;
+    private String cat = "";
 
     public PictureInfo(){
 
@@ -59,4 +60,8 @@ public class PictureInfo {
     public void setSelected(Boolean selected) {
         this.selected = selected;
     }
+
+    public void setCat(String cat) { this.cat = cat; }
+
+    public String getCat() {return this.cat; }
 }

@@ -56,8 +56,13 @@ public class ImageDisplay extends AppCompatActivity implements itemClickListener
     }
 
     @Override
-    public void onPicClicked(PicHolder holder, int position, ArrayList<PictureInfo> pics) {
+    public void onPicClicked(String category, String folderName) {
+        // nothing
+    }
 
+    @Override
+    public void onPicClicked(PicHolder holder, int position, ArrayList<PictureInfo> pics) {
+        // nothing
     }
 
     public ArrayList<PictureInfo> getAllImagesByFolder(String path){

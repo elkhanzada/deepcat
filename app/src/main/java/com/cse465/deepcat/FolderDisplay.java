@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -22,11 +25,13 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NavigableMap;
 
 public class FolderDisplay extends AppCompatActivity implements itemClickListener{
     RecyclerView folderRecycler;
     ArrayList<FolderInfo> allFolders;
-    ProgressBar load;
     String folderPath = "";
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 
@@ -38,17 +43,14 @@ public class FolderDisplay extends AppCompatActivity implements itemClickListene
         {
             folderPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
             allFolders = new ArrayList<>();
-            folderRecycler = findViewById(R.id.recycler);
+            folderRecycler = findViewById(R.id.folderRecycler);
             folderRecycler.addItemDecoration(new MarginDecoration(this));
             folderRecycler.hasFixedSize();
-            load = findViewById(R.id.loader);
 
             if(allFolders.isEmpty()){
-                load.setVisibility(View.VISIBLE);
                 allFolders = getAllCategories();
                 RecyclerView.Adapter folderAdapter = new FolderAdapter(allFolders, FolderDisplay.this, this);
                 folderRecycler.setAdapter(folderAdapter);
-                load.setVisibility(View.GONE);
             }else{
 
             }
@@ -56,14 +58,21 @@ public class FolderDisplay extends AppCompatActivity implements itemClickListene
     }
 
     @Override
-    public void onPicClicked(PicHolder holder, int position, ArrayList<PictureInfo> pics) {
+    public void onPicClicked(String category, String folderName) {
 
     }
 
-    public ArrayList<FolderInfo> getAllCategories(){
-        ArrayList<FolderInfo> folders = new ArrayList<FolderInfo>();
+    @Override
+    public void onPicClicked(PicHolder holder, int position, ArrayList<PictureInfo> pics) {
+        // nothing here
+    }
 
+    public ArrayList<FolderInfo> getAllCategories(){
+        ArrayList<FolderInfo> folders = new ArrayList<>();
         ArrayList<PictureInfo> images = new ArrayList<>();
+        ArrayList<String> imgCat = new ArrayList<>();
+        Map<String, Integer> map = new HashMap<>();
+
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
         Uri allVideosuri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String[] projection = { MediaStore.Images.ImageColumns.DATA ,MediaStore.Images.Media.DISPLAY_NAME,
@@ -76,6 +85,22 @@ public class FolderDisplay extends AppCompatActivity implements itemClickListene
                 pic.setPictureName(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)));
                 pic.setPicturePath(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
                 pic.setPictureSize(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE)));
+                Bitmap image_bit = MediaStore.Images.Media.getBitmap(this.getContentResolver(), allVideosuri);
+                String imgClass = MainActivity.getClass(image_bit, allVideosuri);
+                Integer key = map.get(imgClass);
+                if(key == null || key == 0) {
+                    map.put(imgClass, 1);
+                    imgCat.add(imgClass);
+                    FolderInfo f = new FolderInfo();
+                    f.setCat(imgClass);
+                    f.setFolderName(imgClass);
+                    f.setFirstPic(pic.getPicturePath());
+                    f.inc();
+                    folders.add(f);
+                } else {
+
+                }
+                pic.setCat(imgClass);
                 images.add(pic);
             }while(cursor.moveToNext());
             cursor.close();
@@ -87,7 +112,8 @@ public class FolderDisplay extends AppCompatActivity implements itemClickListene
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        MainActivity.allImg = images;
+        Log.e("folder count: ", ""+folders.size());
         return folders;
     }
 

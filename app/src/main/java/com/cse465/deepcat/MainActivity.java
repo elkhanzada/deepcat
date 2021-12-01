@@ -33,14 +33,23 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     public static Interpreter interpreter;
-    List<String> labels;
+    static List<String> labels;
+    static ArrayList<PictureInfo> allImg;
     String MODEL_FILE = "my_model.tflite";
     String LABEL_FILE = "labels.txt";
-    int INPUT_SIZE = 224;
-    int PIXEL_SIZE = 3;
+    static int INPUT_SIZE = 224;
+    static int PIXEL_SIZE = 3;
     ImageView uploaded;
     Button changeViewButton = null;
     static public ArrayList<String> category;
+
+    public static String getClass(Bitmap image_bit, android.net.Uri uri) {
+        Float[] results = classify(image_bit);
+        int maxIndex = getMaximumIndex(results);
+        float maxProb = results[maxIndex];
+        String classified = labels.get(maxIndex);
+        return classified;
+    }
 
     ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
     uri -> {
@@ -56,7 +65,9 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    });;
+    });
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         changeViewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, ImageDisplay.class));
+                startActivity(new Intent(MainActivity.this, FolderDisplay.class));
             }
         });
         try {
@@ -79,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
     public void upload(View view){
         mGetContent.launch("image/*");
     }
-    private int getMaximumIndex(Float[] results) {
+    private static int getMaximumIndex(Float[] results) {
         float max = -1;
         int maxIndex = -1;
         for(int i = 0; i< results.length;i++){
@@ -91,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         return maxIndex;
     }
 
-    private ByteBuffer convertBitmapToByteBuffer(Bitmap bitmap) {
+    private static ByteBuffer convertBitmapToByteBuffer(Bitmap bitmap) {
         float IMAGE_MEAN = 0;
         float IMAGE_STD = 255.0f;
         ByteBuffer byteBuffer;
@@ -110,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return byteBuffer;
     }
-    private Float[] classify(Bitmap image_bit) {
+    public static Float[] classify(Bitmap image_bit) {
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(image_bit, INPUT_SIZE, INPUT_SIZE, false);
         ByteBuffer byteBuffer = convertBitmapToByteBuffer(scaledBitmap);
         float [][] temp  = new float[1][labels.size()];

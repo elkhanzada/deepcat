@@ -1,25 +1,31 @@
 package com.cse465.deepcat;
 
+import android.icu.text.CaseMap;
+
 public class FolderInfo {
-    private  String path;
+    private  String cat;
     private  String folderName;
     private  String firstPic;
+    private int cnt;
 
     public FolderInfo(){
-
+        this.cnt = 0;
+        this.firstPic = "";
     }
 
     public FolderInfo(String path, String folderName) {
-        this.path = path;
+        this.cat = path;
         this.folderName = folderName;
+        this.cnt = 0;
+        this.firstPic = "";
     }
 
-    public String getPath() {
-        return path;
+    public String getCat() {
+        return cat;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setCat(String cat) {
+        this.cat = cat;
     }
 
     public String getFolderName() {
@@ -37,4 +43,8 @@ public class FolderInfo {
     public void setFirstPic(String firstPic) {
         this.firstPic = firstPic;
     }
+
+    public int getCnt() {return this.cnt;}
+
+    public void inc() {this.cnt ++;}
 }
