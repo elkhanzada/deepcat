@@ -1,7 +1,6 @@
 package com.cse465.deepcat;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +16,9 @@ import java.util.ArrayList;
 public class FolderAdapter extends RecyclerView.Adapter<FolderHolder>{
     private ArrayList<FolderInfo> folders;
     private Context folderContx;
-    private itemClickListener listenToClick;
+    private ItemClickListener listenToClick;
 
-    public FolderAdapter(ArrayList<FolderInfo> folders, Context folderContx, itemClickListener listen) {
+    public FolderAdapter(ArrayList<FolderInfo> folders, Context folderContx, ItemClickListener listen) {
         this.folders = folders;
         this.folderContx = folderContx;
         this.listenToClick = listen;

@@ -5,19 +5,17 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -27,9 +25,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NavigableMap;
 
-public class FolderDisplay extends AppCompatActivity implements itemClickListener{
+public class FolderDisplay extends AppCompatActivity implements ItemClickListener {
     RecyclerView folderRecycler;
     ArrayList<FolderInfo> allFolders;
     String folderPath = "";
@@ -59,21 +56,26 @@ public class FolderDisplay extends AppCompatActivity implements itemClickListene
 
     @Override
     public void onPicClicked(String category, String folderName) {
-
+        MainActivity.currentCat = category;
+        startActivity(new Intent(FolderDisplay.this, ImageDisplay.class));
     }
 
     @Override
-    public void onPicClicked(PicHolder holder, int position, ArrayList<PictureInfo> pics) {
+    public void onPicClicked(ImageHolder holder, int position, ArrayList<ImageInfo> pics) {
         // nothing here
     }
 
     public ArrayList<FolderInfo> getAllCategories(){
+        if(MainActivity.allFolders.size()>0)
+        {
+            return MainActivity.allFolders;
+        }
         ArrayList<FolderInfo> folders = new ArrayList<>();
-        ArrayList<PictureInfo> images = new ArrayList<>();
+        ArrayList<ImageInfo> images = new ArrayList<>();
         ArrayList<String> imgCat = new ArrayList<>();
         Map<String, Integer> map = new HashMap<>();
 
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
         Uri allVideosuri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String[] projection = { MediaStore.Images.ImageColumns.DATA ,MediaStore.Images.Media.DISPLAY_NAME,
                 MediaStore.Images.Media.SIZE};
@@ -81,30 +83,37 @@ public class FolderDisplay extends AppCompatActivity implements itemClickListene
         try {
             cursor.moveToFirst();
             do{
-                PictureInfo pic = new PictureInfo();
+                ImageInfo pic = new ImageInfo();
                 pic.setPictureName(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)));
                 pic.setPicturePath(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
                 pic.setPictureSize(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE)));
-                Bitmap image_bit = MediaStore.Images.Media.getBitmap(this.getContentResolver(), allVideosuri);
-                String imgClass = MainActivity.getClass(image_bit, allVideosuri);
-                Integer key = map.get(imgClass);
-                if(key == null || key == 0) {
-                    map.put(imgClass, 1);
-                    imgCat.add(imgClass);
-                    FolderInfo f = new FolderInfo();
-                    f.setCat(imgClass);
-                    f.setFolderName(imgClass);
-                    f.setFirstPic(pic.getPicturePath());
-                    f.inc();
-                    folders.add(f);
-                } else {
-
+                //Log.e("path of image is", pic.getPicturePath());
+                try {
+                    Bitmap image_bit = BitmapFactory.decodeFile(pic.getPicturePath());
+                    String imgClass = MainActivity.getClass(image_bit, allVideosuri);
+                    //Log.d("category is: ", imgClass);
+                    Integer key = map.get(imgClass);
+                    if(key == null || key == 0) {
+                        imgCat.add(imgClass);
+                        FolderInfo f = new FolderInfo();
+                        f.setCat(imgClass);
+                        f.setFolderName(imgClass);
+                        f.setFirstPic(pic.getPicturePath());
+                        f.inc();
+                        folders.add(f);
+                        map.put(imgClass, folders.size());
+                    } else {
+                        folders.get(key - 1).inc();
+                    }
+                    pic.setCat(imgClass);
+                    images.add(pic);
+                } catch (Exception e) {
+                    Log.e("error: ", e.toString());
                 }
-                pic.setCat(imgClass);
-                images.add(pic);
+
             }while(cursor.moveToNext());
             cursor.close();
-            ArrayList<PictureInfo> reSelection = new ArrayList<>();
+            ArrayList<ImageInfo> reSelection = new ArrayList<>();
             for(int i = images.size()-1; i > -1; i--){
                 reSelection.add(images.get(i));
             }
@@ -113,6 +122,7 @@ public class FolderDisplay extends AppCompatActivity implements itemClickListene
             e.printStackTrace();
         }
         MainActivity.allImg = images;
+        MainActivity.allFolders = folders;
         Log.e("folder count: ", ""+folders.size());
         return folders;
     }

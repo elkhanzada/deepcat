@@ -16,11 +16,11 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 
-public class PictureAdapter extends RecyclerView.Adapter<PicHolder> {
+public class ImageAdapter extends RecyclerView.Adapter<ImageHolder> {
 
-    private ArrayList<PictureInfo> pictureList;
+    private ArrayList<ImageInfo> pictureList;
     private Context pictureContx;
-    private final itemClickListener picListerner;
+    private final ItemClickListener picListerner;
 
     /**
      *
@@ -28,7 +28,7 @@ public class PictureAdapter extends RecyclerView.Adapter<PicHolder> {
      * @param pictureContx The Activities Context
      * @param picListerner An interface for listening to clicks on the RecyclerView's items
      */
-    public PictureAdapter(ArrayList<PictureInfo> pictureList, Context pictureContx, itemClickListener picListerner) {
+    public ImageAdapter(ArrayList<ImageInfo> pictureList, Context pictureContx, ItemClickListener picListerner) {
         this.pictureList = pictureList;
         this.pictureContx = pictureContx;
         this.picListerner = picListerner;
@@ -36,17 +36,17 @@ public class PictureAdapter extends RecyclerView.Adapter<PicHolder> {
 
     @NonNull
     @Override
-    public PicHolder onCreateViewHolder(@NonNull ViewGroup container, int position) {
+    public ImageHolder onCreateViewHolder(@NonNull ViewGroup container, int position) {
         // layoutInflater will create new layout of a custom xml file
         // https://stackoverflow.com/questions/3477422/what-does-layoutinflater-in-android-do
         LayoutInflater inflater = LayoutInflater.from(container.getContext());
         View cell = inflater.inflate(R.layout.pic_holder_item, container, false);
-        return new PicHolder(cell);
+        return new ImageHolder(cell);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final PicHolder holder, @SuppressLint("RecyclerView") final int position) {
-        final PictureInfo image = pictureList.get(position);
+    public void onBindViewHolder(@NonNull final ImageHolder holder, @SuppressLint("RecyclerView") final int position) {
+        final ImageInfo image = pictureList.get(position);
         Glide.with(pictureContx)
                 .load(image.getPicturePath())
                 .apply(new RequestOptions().centerCrop())

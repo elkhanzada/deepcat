@@ -27,14 +27,14 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     public static Interpreter interpreter;
+    static ArrayList<FolderInfo> allFolders = new ArrayList<>();
     static List<String> labels;
-    static ArrayList<PictureInfo> allImg;
+    static ArrayList<ImageInfo> allImg;
+    static String currentCat;
     String MODEL_FILE = "my_model.tflite";
     String LABEL_FILE = "labels.txt";
     static int INPUT_SIZE = 224;

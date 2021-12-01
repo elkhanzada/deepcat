@@ -1,6 +1,6 @@
 package com.cse465.deepcat;
 
-public class PictureInfo {
+public class ImageInfo {
 
     private String pictureName;
     private String picturePath;
@@ -9,11 +9,11 @@ public class PictureInfo {
     private Boolean selected = false;
     private String cat = "";
 
-    public PictureInfo(){
+    public ImageInfo(){
 
     }
 
-    public PictureInfo(String pictureName, String picturePath, String pictureSize, String imageUri) {
+    public ImageInfo(String pictureName, String picturePath, String pictureSize, String imageUri) {
         this.pictureName = pictureName;
         this.picturePath = picturePath;
         this.pictureSize = pictureSize;

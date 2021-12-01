@@ -23,9 +23,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class ImageDisplay extends AppCompatActivity implements itemClickListener{
+public class ImageDisplay extends AppCompatActivity implements ItemClickListener {
     RecyclerView imageRecycler;
-    ArrayList<PictureInfo> allpictures;
+    ArrayList<ImageInfo> allpictures;
     ProgressBar load;
     String folderPath = "";
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
@@ -47,10 +47,8 @@ public class ImageDisplay extends AppCompatActivity implements itemClickListener
             if(allpictures.isEmpty()){
                 load.setVisibility(View.VISIBLE);
                 allpictures = getAllImagesByFolder(folderPath);
-                    imageRecycler.setAdapter(new PictureAdapter(allpictures,ImageDisplay.this,this));
+                    imageRecycler.setAdapter(new ImageAdapter(allpictures,ImageDisplay.this,this));
                 load.setVisibility(View.GONE);
-            }else{
-
             }
         }
     }
@@ -61,34 +59,19 @@ public class ImageDisplay extends AppCompatActivity implements itemClickListener
     }
 
     @Override
-    public void onPicClicked(PicHolder holder, int position, ArrayList<PictureInfo> pics) {
+    public void onPicClicked(ImageHolder holder, int position, ArrayList<ImageInfo> pics) {
         // nothing
     }
 
-    public ArrayList<PictureInfo> getAllImagesByFolder(String path){
-        Log.e("path is ", ""+path);
-        ArrayList<PictureInfo> images = new ArrayList<>();
-        Uri allVideosuri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = { MediaStore.Images.ImageColumns.DATA ,MediaStore.Images.Media.DISPLAY_NAME,
-                MediaStore.Images.Media.SIZE};
-        Cursor cursor = ImageDisplay.this.getContentResolver().query( allVideosuri, projection, MediaStore.Images.Media.DATA + " like ? ", new String[] {"%"+path+"%"}, null);
-        try {
-            cursor.moveToFirst();
-            do{
-                PictureInfo pic = new PictureInfo();
-                pic.setPictureName(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)));
-                pic.setPicturePath(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
-                pic.setPictureSize(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE)));
-                images.add(pic);
-            }while(cursor.moveToNext());
-                cursor.close();
-                ArrayList<PictureInfo> reSelection = new ArrayList<>();
-                for(int i = images.size()-1; i > -1; i--){
-                    reSelection.add(images.get(i));
+    public ArrayList<ImageInfo> getAllImagesByFolder(String path){
+        Log.d("Cat is ", ""+MainActivity.currentCat);
+        ArrayList<ImageInfo> images = new ArrayList<>();
+        for(int i = 0; i < MainActivity.allImg.size(); ++i)
+        {
+            if(MainActivity.allImg.get(i).getCat().compareTo(MainActivity.currentCat) == 0)
+            {
+                images.add(MainActivity.allImg.get(i));
             }
-            images = reSelection;
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return images;
     }
