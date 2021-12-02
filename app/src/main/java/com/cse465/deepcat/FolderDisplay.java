@@ -66,16 +66,17 @@ public class FolderDisplay extends AppCompatActivity implements ItemClickListene
     }
 
     public ArrayList<FolderInfo> getAllCategories(){
-        if(MainActivity.allFolders.size()>0)
-        {
-            return MainActivity.allFolders;
-        }
+//        if(MainActivity.allFolders.size()>0)
+//        {
+//            return MainActivity.allFolders;
+//        }
         ArrayList<FolderInfo> folders = new ArrayList<>();
         ArrayList<ImageInfo> images = new ArrayList<>();
         ArrayList<String> imgCat = new ArrayList<>();
         Map<String, Integer> map = new HashMap<>();
 
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+        //String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
         Uri allVideosuri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String[] projection = { MediaStore.Images.ImageColumns.DATA ,MediaStore.Images.Media.DISPLAY_NAME,
                 MediaStore.Images.Media.SIZE};
