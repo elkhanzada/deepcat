@@ -22,6 +22,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,14 +67,44 @@ public class FolderDisplay extends AppCompatActivity implements ItemClickListene
     }
 
     public ArrayList<FolderInfo> getAllCategories(){
-//        if(MainActivity.allFolders.size()>0)
-//        {
-//            return MainActivity.allFolders;
-//        }
-        ArrayList<FolderInfo> folders = new ArrayList<>();
-        ArrayList<ImageInfo> images = new ArrayList<>();
-        ArrayList<String> imgCat = new ArrayList<>();
-        Map<String, Integer> map = new HashMap<>();
+        //MainActivity.folders = new ArrayList<>();
+        //MainActivity.images = new ArrayList<>();
+        //MainActivity.map = new HashMap<>();
+        ArrayList<Integer> pos = new ArrayList<>();
+        for(int i = 0; i < MainActivity.images.size(); ++i)
+        {
+            String path = MainActivity.images.get(i).getPicturePath();
+            String cat = MainActivity.images.get(i).getCat();
+            File f = new File(path);
+            if(!f.isDirectory() && !f.exists()) {
+                MainActivity.images.remove(i); i--;
+                Integer key = MainActivity.map.get(cat);
+                Log.e("path not exist: ", path + " Key is: " + key);
+                assert key != null;
+                MainActivity.folders.get(key - 1).dec();
+
+                if(MainActivity.folders.get(key - 1).getCnt() == 0)
+                {
+                    MainActivity.map.remove(cat);
+                } else {
+                    for(int j = 0; j < MainActivity.images.size(); ++j) {
+                        String tmpCat = MainActivity.images.get(j).getCat();
+                        String tmpPath = MainActivity.images.get(j).getPicturePath();
+                        if(tmpCat.equals(cat)) {
+                            MainActivity.folders.get(key - 1).setFirstPic(tmpPath);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        // remove folder with 0 images in it
+        pos = new ArrayList<>();
+        for(int i = 0; i < MainActivity.folders.size(); ++i) {
+            if(MainActivity.folders.get(i).getCnt() == 0) {
+                MainActivity.folders.remove(i); i--;
+            }
+        }
 
         //String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
@@ -90,42 +121,43 @@ public class FolderDisplay extends AppCompatActivity implements ItemClickListene
                 pic.setPictureSize(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE)));
                 //Log.e("path of image is", pic.getPicturePath());
                 try {
-                    Bitmap image_bit = BitmapFactory.decodeFile(pic.getPicturePath());
-                    String imgClass = MainActivity.getClass(image_bit, allVideosuri);
-                    //Log.d("category is: ", imgClass);
-                    Integer key = map.get(imgClass);
-                    if(key == null || key == 0) {
-                        imgCat.add(imgClass);
-                        FolderInfo f = new FolderInfo();
-                        f.setCat(imgClass);
-                        f.setFolderName(imgClass);
-                        f.setFirstPic(pic.getPicturePath());
-                        f.inc();
-                        folders.add(f);
-                        map.put(imgClass, folders.size());
+                    String cat = MainActivity.imgPath.get(pic.getPicturePath());
+                    String imgClass = null;
+                    if(cat == null) {
+                        Bitmap image_bit = BitmapFactory.decodeFile(pic.getPicturePath());
+                        imgClass = MainActivity.getClass(image_bit, allVideosuri);
+                        MainActivity.imgPath.put(pic.getPicturePath(), imgClass);
+                        Integer key = MainActivity.map.get(imgClass);
+
+                        Log.e("path new: ", pic.getPicturePath() + " key is: " + key);
+                        if(key == null || key == 0) {
+                            FolderInfo f = new FolderInfo();
+                            f.setCat(imgClass);
+                            f.setFolderName(imgClass);
+                            f.setFirstPic(pic.getPicturePath());
+                            f.inc();
+                            MainActivity.folders.add(f);
+                            MainActivity.map.put(imgClass, MainActivity.folders.size());
+                            key = MainActivity.folders.size();
+                        } else {
+                            MainActivity.folders.get(key - 1).inc();
+                        }
+                        pic.setCat(imgClass);
+                        MainActivity.images.add(pic);
                     } else {
-                        folders.get(key - 1).inc();
+                        imgClass = cat;
                     }
-                    pic.setCat(imgClass);
-                    images.add(pic);
                 } catch (Exception e) {
                     Log.e("error: ", e.toString());
                 }
 
             }while(cursor.moveToNext());
             cursor.close();
-            ArrayList<ImageInfo> reSelection = new ArrayList<>();
-            for(int i = images.size()-1; i > -1; i--){
-                reSelection.add(images.get(i));
-            }
-            images = reSelection;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        MainActivity.allImg = images;
-        MainActivity.allFolders = folders;
-        Log.e("folder count: ", ""+folders.size());
-        return folders;
+        Log.e("folder count: ", ""+MainActivity.folders.size());
+        return MainActivity.folders;
     }
 
     public boolean CheckPermissionREAD_EXTERNAL_STORAGE(

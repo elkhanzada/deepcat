@@ -66,11 +66,11 @@ public class ImageDisplay extends AppCompatActivity implements ItemClickListener
     public ArrayList<ImageInfo> getAllImagesByFolder(String path){
         Log.d("Cat is ", ""+MainActivity.currentCat);
         ArrayList<ImageInfo> images = new ArrayList<>();
-        for(int i = 0; i < MainActivity.allImg.size(); ++i)
+        for(int i = 0; i < MainActivity.images.size(); ++i)
         {
-            if(MainActivity.allImg.get(i).getCat().compareTo(MainActivity.currentCat) == 0)
+            if(MainActivity.images.get(i).getCat().compareTo(MainActivity.currentCat) == 0)
             {
-                images.add(MainActivity.allImg.get(i));
+                images.add(MainActivity.images.get(i));
             }
         }
         return images;
