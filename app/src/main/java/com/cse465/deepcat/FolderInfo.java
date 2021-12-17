@@ -47,4 +47,6 @@ public class FolderInfo {
     public int getCnt() {return this.cnt;}
 
     public void inc() {this.cnt ++;}
+
+    public void dec() {this.cnt --;}
 }

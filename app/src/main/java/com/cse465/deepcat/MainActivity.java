@@ -27,13 +27,17 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     public static Interpreter interpreter;
-    static ArrayList<FolderInfo> allFolders = new ArrayList<>();
+    static Map<String, String> imgPath = new HashMap<>();
+    static ArrayList<FolderInfo> folders = new ArrayList<>();
+    static ArrayList<ImageInfo> images = new ArrayList<>();
+    static Map<String, Integer> map = new HashMap<>();
     static List<String> labels;
-    static ArrayList<ImageInfo> allImg;
     static String currentCat;
     String MODEL_FILE = "my_model.tflite";
     String LABEL_FILE = "labels.txt";
